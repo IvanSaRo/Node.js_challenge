@@ -81,24 +81,24 @@ const manageAndPresentQuestions = (questionsAnswers) => {
 
 // this function receives the questions and shows it to the user, also recives te correct answers to validate user´s answers
 const showCuestions = (questions, correctAnswer) => {
-  let respuestas = [];
+  let userAnswers = [];
 
-  function pregunta(i) {
+  function ask(i) {
     process.stdout.write(JSON.stringify(questions[i]));
   }
 
   process.stdin.on("data", function (data) {
-    respuestas.push(data.toString().trim().toUpperCase());
+    userAnswers.push(data.toString().trim().toUpperCase());
 
-    if (respuestas.length < questions.length) {
-      pregunta(respuestas.length);
+    if (userAnswers.length < questions.length) {
+      ask(userAnswers.length);
     } else {
-      console.log(respuestas);
+      console.log(userAnswers);
       process.exit();
     }
   });
 
-  pregunta(0);
+  ask(0);
 
   /*  let questionsLength = questions.length;
 
