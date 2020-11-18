@@ -6,12 +6,14 @@ const axios = require("axios");
 let readline = require("readline");
 let rl = readline.createInterface(process.stdin, process.stdout);
 
-let response, questionsAnswers, points;
+let response, questionsAnswers;
 let questions = [];
 let answers = [];
 let correctAnswer = [];
 let incorrectAnswers = [];
 let randomAnswers = [];
+let questionPlusAnswers = [];
+let selectedAnswers = [];
 
 rl.question(
   "Hi, welcome to the Powershell trivia, if you want to play enter p, if you want to see the scores enter s, enter something else to exit\n",
@@ -45,6 +47,7 @@ const getTriviaQuestions = async (numberOfQuestions) => {
 
     response = await axios.get(url);
     questionsAnswers = response.data.results;
+    // Once we got all the cuestions we have tosend it to be processed in order to show it correctly to the user
     manageAndPresentQuestions(questionsAnswers);
   } catch (error) {
     console.log(`getTrivialQuestions Failed. Error: ${error}`);
@@ -55,21 +58,69 @@ const getTriviaQuestions = async (numberOfQuestions) => {
 const manageAndPresentQuestions = (questionsAnswers) => {
   questionsAnswers.forEach((element) => {
     correctAnswer.push(element.correct_answer);
-    
+
     answers = [...element.incorrect_answers, element.correct_answer];
 
     randomAnswers = answers.sort(function () {
       return Math.random() - 0.5;
     });
 
-   let questionPlusAnswers = {
-        question: element.question,
-        A: randomAnswers[0],
-        B: randomAnswers[1],
-        C: randomAnswers[2],
-        D: randomAnswers[3],
-      }
-console.log(questionPlusAnswers, correctAnswer)
-// Now we have the question and the answers and the correct answer to check if the user has answered correctly, we are ready to send this information and show it to the user
+    questionPlusAnswers.push({
+      question: element.question,
+      A: randomAnswers[0],
+      B: randomAnswers[1],
+      C: randomAnswers[2],
+      D: randomAnswers[3],
+    });
+
+    // Now we have the question and the answers and the correct answer to check if the user has answered correctly, we are ready to send this information and show it to the user
   });
+
+  showCuestions(questionPlusAnswers, correctAnswer);
+};
+
+// this function receives the questions and shows it to the user, also recives te correct answers to validate user´s answers
+const showCuestions = (questions, correctAnswer) => {
+  let respuestas = [];
+
+  function pregunta(i) {
+    process.stdout.write(JSON.stringify(questions[i]));
+  }
+
+  process.stdin.on("data", function (data) {
+    respuestas.push(data.toString().trim().toUpperCase());
+
+    if (respuestas.length < questions.length) {
+      pregunta(respuestas.length);
+    } else {
+      console.log(respuestas);
+      process.exit();
+    }
+  });
+
+  pregunta(0);
+
+  /*  let questionsLength = questions.length;
+
+  for (let i = 0; i < questionsLength; i++) {
+
+   
+    
+      ask(i);
+
+  }
+  function ask(i) {
+    let pregunta = questions[i].toString(); 
+    rl.question("holi", function () {
+      rl.on("data", function (data) {
+        selectedAnswers.push(data);
+
+        if (selectedAnswers.length < questions.length) {
+          ask(selectedAnswers.length);
+        } else {
+          process.exit();
+        }
+      });
+    }); 
+  } */
 };
