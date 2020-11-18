@@ -1,0 +1,11 @@
+{
+  "name": "node.js_challenge",
+  "version": "1.0.0",
+  "description": "Trivia using the powershell",
+  "main": "trivia.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iván Sánchez",
+  "license": "ISC"
+}
