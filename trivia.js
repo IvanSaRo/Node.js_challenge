@@ -6,7 +6,12 @@ const axios = require("axios");
 let readline = require("readline");
 let rl = readline.createInterface(process.stdin, process.stdout);
 
-let response, questionsAnswers;
+let response, questionsAnswers, points;
+let questions = [];
+let answers = [];
+let correctAnswer = [];
+let incorrectAnswers = [];
+let randomAnswers = [];
 
 rl.question(
   "Hi, welcome to the Powershell trivia, if you want to play enter p, if you want to see the scores enter s, enter something else to exit\n",
@@ -33,7 +38,7 @@ rl.question(
   }
 );
 
-// We get the number of answers by parameter 
+// We get the number of answers by parameter
 const getTriviaQuestions = async (numberOfQuestions) => {
   try {
     const url = `https://opentdb.com/api.php?amount=${numberOfQuestions}`;
@@ -41,15 +46,30 @@ const getTriviaQuestions = async (numberOfQuestions) => {
     response = await axios.get(url);
     questionsAnswers = response.data.results;
     manageAndPresentQuestions(questionsAnswers);
-    
   } catch (error) {
     console.log(`getTrivialQuestions Failed. Error: ${error}`);
   }
 };
 
-
+// Here we are going to deconstruct the object and prepare it to show it to the user
 const manageAndPresentQuestions = (questionsAnswers) => {
+  questionsAnswers.forEach((element) => {
+    correctAnswer.push(element.correct_answer);
+    
+    answers = [...element.incorrect_answers, element.correct_answer];
 
-    console.log(questionsAnswers);
+    randomAnswers = answers.sort(function () {
+      return Math.random() - 0.5;
+    });
 
-}
+   let questionPlusAnswers = {
+        question: element.question,
+        A: randomAnswers[0],
+        B: randomAnswers[1],
+        C: randomAnswers[2],
+        D: randomAnswers[3],
+      }
+console.log(questionPlusAnswers, correctAnswer)
+// Now we have the question and the answers and the correct answer to check if the user has answered correctly, we are ready to send this information and show it to the user
+  });
+};
