@@ -19,7 +19,7 @@ rl.question(
   "Hi, welcome to the Powershell trivia, if you want to play enter p, if you want to see the scores enter s, enter something else to exit\n",
   (answer) => {
     // The user has entered p to play
-    if (answer === "p") {
+    if (answer === "p" || answer === "P") {
       // We check how many answers does the user wants and run a validation over the input
       rl.question("How many questions do you want?(max 20)\n", (answer) => {
         // We validate the input to prevent any failure geting the info from triviaApi
@@ -81,46 +81,49 @@ const manageAndPresentQuestions = (questionsAnswers) => {
 
 // this function receives the questions and shows it to the user, also recives te correct answers to validate user´s answers
 const showCuestions = (questions, correctAnswer) => {
+  let questionsToValidate = [...questions];
+
   let userAnswers = [];
 
   function ask(i) {
-    process.stdout.write(JSON.stringify(questions[i]));
+    let processedQuestion = giveFormatToQuestionObject(questions[i]);
+
+    process.stdout.write(processedQuestion);
   }
 
   process.stdin.on("data", function (data) {
-    userAnswers.push(data.toString().trim().toUpperCase());
+    // Here we validate if user´s answer has the correct format
+    
 
-    if (userAnswers.length < questions.length) {
-      ask(userAnswers.length);
+    data = data.toString().toUpperCase();
+
+    console.log(" aqui ", typeof data, data);
+
+
+    if (data === "A" || data === "B" || data === "C" || data === "D") {
+      userAnswers.push(data);
+
+      if (userAnswers.length < questions.length) {
+        ask(userAnswers.length);
+      } else {
+        console.log(userAnswers);
+        process.exit();
+      }
     } else {
-      console.log(userAnswers);
+      process.stdout.write(
+        "You have to enter a valid answer using a, b, c or d, please try again"
+      );
       process.exit();
     }
   });
 
   ask(0);
+};
 
-  /*  let questionsLength = questions.length;
+const giveFormatToQuestionObject = (questionObject) => {
+  let questionString = JSON.stringify(questionObject);
 
-  for (let i = 0; i < questionsLength; i++) {
+  
 
-   
-    
-      ask(i);
-
-  }
-  function ask(i) {
-    let pregunta = questions[i].toString(); 
-    rl.question("holi", function () {
-      rl.on("data", function (data) {
-        selectedAnswers.push(data);
-
-        if (selectedAnswers.length < questions.length) {
-          ask(selectedAnswers.length);
-        } else {
-          process.exit();
-        }
-      });
-    }); 
-  } */
+  return questionString;
 };
