@@ -93,12 +93,10 @@ const showCuestions = (questions, correctAnswer) => {
 
   process.stdin.on("data", function (data) {
     // Here we validate if user´s answer has the correct format
-    
 
     data = data.toString().toUpperCase();
 
-    console.log(" aqui ", typeof data, data);
-
+    // console.log(" aqui ", typeof data, data);
 
     if (data === "A" || data === "B" || data === "C" || data === "D") {
       userAnswers.push(data);
@@ -111,19 +109,32 @@ const showCuestions = (questions, correctAnswer) => {
       }
     } else {
       process.stdout.write(
-        "You have to enter a valid answer using a, b, c or d, please try again"
+        "\nYou have to enter a valid answer using a, b, c or d, please try again\n"
       );
-      process.exit();
+
+      ask(userAnswers.length);
     }
   });
 
   ask(0);
 };
 
+// Here we take care of the way the user see the questions, in order, 1) we transform the object to string, the terminal can´t show an object 2) we delete symbols like "" or {} 3) because of step 2 we have to delete the blank space at the begining of the string 4) The first letter of the string (the q of question) must be in uppercase 5) we add lineBreaks to let the text breathe
 const giveFormatToQuestionObject = (questionObject) => {
   let questionString = JSON.stringify(questionObject);
 
-  
+  questionString = questionString.replace(
+    /[-!$%^*()_+|~=`{}\[\]";'<>?,.\/]/g,
+    " "
+  );
+  questionString = questionString.slice(2);
+  questionString =
+    questionString.charAt(0).toUpperCase() + questionString.slice(1);
+  //   questionString = questionString.map()
+  let lineBreak = "\n";
+  questionString = questionString.concat(lineBreak);
+  questionString = lineBreak + questionString;
 
   return questionString;
 };
+
