@@ -7,12 +7,14 @@ const { type } = require("os");
 let readline = require("readline");
 let rl = readline.createInterface(process.stdin, process.stdout);
 
+// Requiring fs module in which writeFile function is defined.
+const fs = require("fs");
+
 let response, questionsAnswers;
 let answers = [];
 let correctAnswer = [];
 let randomAnswers = [];
 let questionPlusAnswers = [];
-
 
 // Here is where we start the cycle
 rl.question(
@@ -32,8 +34,16 @@ rl.question(
         //  If the validation goes ok we pass the number of questions through parameter
         getTriviaQuestions(answer);
       });
-    } else if (answer === "s") {
-      console.log("scores");
+    } else if (answer === "s" || answer === "S") {
+      // We read the plain text document
+      fs.readFile("Scores.txt", (err, data) => {
+        if (err) {
+          process.stdout.write("\nThere was a problem\n");
+        } else {
+          process.stdout.write(data);
+          process.exit();
+        }
+      });
     } else {
       process.exit();
     }
@@ -62,7 +72,7 @@ const manageAndPresentQuestions = (questionsAnswers) => {
     randomAnswers = answers.sort(function () {
       return Math.random() - 0.5;
     });
-// After getting the answers and randomize it we create the object with the question and the answers
+    // After getting the answers and randomize it we create the object with the question and the answers
     questionPlusAnswers.push({
       question: element.question,
       A: randomAnswers[0],
@@ -94,8 +104,6 @@ const manageAndPresentQuestions = (questionsAnswers) => {
 
 // this function receives the questions and shows it to the user, also recives te correct answers to validate user´s answers
 const showCuestions = (questions, correctAnswer) => {
-  
-
   let userAnswers = [];
 
   function ask(i) {
@@ -116,8 +124,9 @@ const showCuestions = (questions, correctAnswer) => {
       } else {
         let score = calculateScore(userAnswers, correctAnswer);
         process.stdout.write(
-            "\nYour score is " + score +"% correct questions\n"
-          );
+          "\nYour score is " + score + "% correct questions\n"
+        );
+        saveScore(score);
         process.exit();
       }
     } else {
@@ -161,6 +170,16 @@ const calculateScore = (userAnswers, correctAnswer) => {
       points++;
     }
   }
-// now we are returning the score in an appropriate format to show it and to store it
+  // now we are returning the score in an appropriate format to show it and to store it
   return Math.trunc((points / userAnswers.length) * 100);
+};
+
+// Here is where we are going to save the score
+const saveScore = (score) => {
+  // Data which will write in a file.
+  let date = new Date().toISOString();
+  let data = "\n" + date + " " + score + "%";
+
+  // Write data in 'Scores.txt' .
+  fs.writeFileSync("Scores.txt", data, { flag: "a" });
 };
